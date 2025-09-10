@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package agg_proto;
+
+service agg_service {
+  rpc TickSnapshotRequest (tick_request) returns (tick_update) {}
+  rpc TickStreamRequest (tick_request) returns (stream tick_update) {}
+  rpc TickBatchedStreamRequest (tick_request) returns (stream batched_tick_update) {}
+
+}
+
+message tick_request {
+    string symbol = 1;
+}
+message tick_update {
+    uint32 side = 1;
+    double price = 2;
+    double quantity = 3;
+    int64 tick_id = 4;
+}
+
+message batched_tick_update  {
+    string symbol = 1;
+    uint32 exchange = 2;
+    int64 tick_id = 3;
+    uint64 flag = 4;
+    repeated tick_update updates = 5;
+}
