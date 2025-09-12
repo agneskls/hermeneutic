@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  cpp-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rocky-cpp-dev
+    tty: true
+    volumes:
+      - ./workspace:/workspace
+    working_dir: /workspace
+    command: /bin/bash
