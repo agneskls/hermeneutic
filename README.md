@@ -8,14 +8,13 @@ The server—referred to as the Aggregator—establishes three persistent WebSoc
 ### market protocol
 Each of the three exchange integrations—Binance, Kraken, and Crypto.com—is implemented as a separate module under src/market_protocol. These modules encapsulate the logic for handling WebSocket connections and parsing exchange-specific data formats. To streamline common functionality, they all rely on a shared utility called wws_link, which centralizes reusable components like connection helpers, URL builders, or request formatters.
 
-API of the exchagne:
-    [Binance] (https://developers.binance.com/docs/binance-spot-api-docs/web-socket-streams#individual-symbol-ticker-streams)
+#### API of the exchange:
 
-    [Kraken] (https://docs.kraken.com/api/docs/websocket-v2/book/)
+    * [Binance] (https://developers.binance.com/docs/binance-spot-api-docs/web-socket-streams#individual-symbol-ticker-streams)
+    * [Kraken] (https://docs.kraken.com/api/docs/websocket-v2/book/)
+    * [crypto.com] (https://exchange-docs.crypto.com/exchange/v1/rest-ws/index.html#book-instrument_name-depth)
 
-    [crypto.com] (https://exchange-docs.crypto.com/exchange/v1/rest-ws/index.html#book-instrument_name-depth)
-
-Notes on heartbeat handling:
+#### Notes on heartbeat handling:
 | Binance | on heartbeat request from exchange(websocket level), reply with respond(websocket level) |
 | Kraken | send ping message to market periodically |
 | Crypto.com | on heartbeat request from exchange(message level), reply with respond(message level) |
@@ -32,13 +31,10 @@ Despite being fed by separate clients, all extended_book instances share the sam
 
 Each tick in the system carries four distinct quantity fields:
 
-qty[0]: Aggregated quantity across all exchanges
-
-qty[1]: Quantity from Binance
-
-qty[2]: Quantity from Kraken
-
-qty[3]: Quantity from Crypto.com
+| qty[0] | Aggregated quantity across all exchanges |
+| qty[1] | Quantity from Binance |
+| qty[2] | Quantity from Kraken |
+| qty[3] | Quantity from Crypto.com |
 
 The extended_book class uses this structure to maintain a unified view of market depth. All higher-level calculations—such as Best Bid/Offer (BBO), price bands, and volume bands—are derived from the aggregated quantity (qty[0]), ensuring consistency across analytics.
 
@@ -100,7 +96,7 @@ This will build the server, 3 clients and unit test.
 
 
 
-# Run the applications from docker with out compilation
+# Run the applications from docker hub directly
 * Run the docker container in detached mode
 ```
 docker run -dit --init agneskls/agg-service --name aggsrv  /bin/bash
