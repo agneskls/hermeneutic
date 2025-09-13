@@ -26,6 +26,7 @@ public:
     bbo_client(const std::string& connection_str)
         : base_client<bbo_client>(connection_str) {
         printf("bid_price @ bid_total_qty | ask_price @ ask_total_qty\n");
+        fflush(stdout);
     }
 
     void process_ticks(const batched_tick_update &ticks)
@@ -53,6 +54,7 @@ public:
 
         if (print) {
             printf("%f @ %f | %f @ %f\n", bb.price, bb.qty[0], ba.price, ba.qty[0]);
+            fflush(stdout);
         }
 
         best_bid_ = bb;

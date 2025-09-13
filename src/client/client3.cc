@@ -34,6 +34,7 @@ public:
             printf("%d ", i );
         }
         printf("\n");
+        fflush(stdout);
     }
 
     void process_ticks(const batched_tick_update &ticks) 
@@ -57,6 +58,7 @@ public:
                 printf("%f ", i );
             }
             printf("\n");
+            fflush(stdout);
         }
 
         return;

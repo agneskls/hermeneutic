@@ -3,7 +3,7 @@
 Built on a single server handling multiple clients, with protobuf for compact message encoding and gRPC for streamlined remote procedure calls.
 
 ## Aggregator - the server
-The server—referred to as the Aggregator—establishes three persistent WebSocket connections to external exchanges: Binance, Kraken, and Crypto.com. It runs a central event loop that continuously polls incoming data streams from these exchanges, while also handling gRPC requests from connected clients. The Aggregator acts as the bridge between real-time market feeds and client-side consumers, efficiently managing both external and internal communication flows.
+The server—referred to as the Aggregator, establishes three persistent WebSocket connections to external exchanges: Binance, Kraken, and Crypto.com. It runs a central event loop that continuously polls incoming data streams from these exchanges, while also handling gRPC requests from connected clients. The Aggregator acts as the bridge between real-time market feeds and client-side consumers, it normalizes market data from multiple exchanges. It abstracts away the differences in WebSocket payloads, transforming them into a unified internal representation.
 
 ### market protocol
 Each of the three exchange integrations—Binance, Kraken, and Crypto.com—is implemented as a separate module under src/market_protocol. These modules encapsulate the logic for handling WebSocket connections and parsing exchange-specific data formats. To streamline common functionality, they all rely on a shared utility called wws_link, which centralizes reusable components like connection helpers, URL builders, or request formatters.
@@ -15,6 +15,8 @@ Each of the three exchange integrations—Binance, Kraken, and Crypto.com—is i
     * [crypto.com] (https://exchange-docs.crypto.com/exchange/v1/rest-ws/index.html#book-instrument_name-depth)
 
 #### Notes on heartbeat handling:
+| Exchange | Notes |
+| -------- | ----- |
 | Binance | on heartbeat request from exchange(websocket level), reply with respond(websocket level) |
 | Kraken | send ping message to market periodically |
 | Crypto.com | on heartbeat request from exchange(message level), reply with respond(message level) |
@@ -30,7 +32,8 @@ Each client maintains its own instance of the extended_book class, allowing tick
 Despite being fed by separate clients, all extended_book instances share the same logic and structure, enabling consistent handling of market data across exchanges. The class also provides built-in utilities to compute volume bands and price bands, giving each client the ability to analyze liquidity and price distribution in a standardized way.
 
 Each tick in the system carries four distinct quantity fields:
-
+| Field  | Remarks |
+| ------ | ------- |
 | qty[0] | Aggregated quantity across all exchanges |
 | qty[1] | Quantity from Binance |
 | qty[2] | Quantity from Kraken |
@@ -99,7 +102,7 @@ This will build the server, 3 clients and unit test.
 # Run the applications from docker hub directly
 * Run the docker container in detached mode
 ```
-docker run -dit --init agneskls/agg-service --name aggsrv  /bin/bash
+docker run -dit --init  --name aggsrv agneskls/agg-service  /bin/bash
 ```
 * Start the server / clients
 ```
@@ -120,14 +123,14 @@ gRPC is used as the communication protocol between the Aggregator server and cli
 ## Data Recovery
 The current system does not implement any form of data recovery or caching, either between the server and the exchanges, or between the server and its clients. This design relies on the assumption that markets are fast-moving and that the full market book will be reconstructed quickly from live tick streams.
 
-While this may hold true under ideal conditions, it's a risky assumption—especially in cases of network latency, dropped connections, or exchange-side throttling. Without recovery mechanisms, clients may experience gaps in market data, leading to inaccurate views of liquidity or pricing.
+While this may hold true under ideal conditions, it's a risky assumption—especially in cases of network latency, dropped connections. Without recovery mechanisms, clients may experience gaps in market data, leading to inaccurate views of liquidity or pricing.
 
 Addressing this limitation would involve:
 Implementing market recovery protocol
 Implementing local caching or snapshot recovery strategies
 Considering persistent storage for replaying recent market states
 
-This is a critical area for future development to ensure robustness and reliability in real-world trading environments.
+This is a critical area for future development.
 
 
 ## Test suite improvement

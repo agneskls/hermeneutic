@@ -27,6 +27,8 @@ public:
         : base_client<vb_client>(connection_str),
         bands_(bands)
     {
+        printf ("1M 5M 10M 25M 50M B|A 1M 5M 10M 25M 50M \n");
+        fflush(stdout);
     }
 
     void process_ticks(const batched_tick_update &ticks)
@@ -45,6 +47,7 @@ public:
             printf("%f ", f);
         }
         printf("\n");
+        fflush(stdout);
     }
 
 private:
